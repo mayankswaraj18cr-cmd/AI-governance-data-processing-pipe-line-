@@ -2,17 +2,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class RelationshipGraph:
-    def __init__(self):
-        self.edges = []
+REQUIRED_FIELDS = ["id", "entity_type", "name", "source", "created_at"]
 
-    def add(self, a_id, relation, b_id, metadata=None):
-        self.edges.append({
-            "from": a_id,
-            "relation": relation,
-            "to": b_id,
-            "metadata": metadata or {}
-        })
-
-    def export(self):
-        return {"relationships": self.edges}
+def validate_entity(e: dict) -> (bool, list):
+    errs = []
+    for f in REQUIRED_FIELDS:
+        if f not in e or e[f] in (None, "", []):
+            errs.append(f"missing:{f}")
+    return (len(errs) == 0, errs)
